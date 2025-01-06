@@ -1,3 +1,3 @@
 # MonoUI
 
-MonoUI extands material3 design system for more flexibility.
+MonoUI extends material3 design system for more flexibility.
