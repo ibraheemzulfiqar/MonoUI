@@ -5,39 +5,45 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTonalElevationEnabled
-import androidx.compose.material3.LocalUseFallbackRippleImplementation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.isContainer
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+
+// #121212
 
 @Composable
 @NonRestartableComposable
@@ -46,35 +52,30 @@ fun MonoSurface(
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(color),
-    tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
-    content: @Composable () -> Unit
+    contentAlignment: Alignment = Alignment.TopStart,
+    content: @Composable BoxScope.() -> Unit
 ) {
-    val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         Box(
             modifier =
                 modifier
                     .surface(
                         shape = shape,
-                        backgroundColor =
-                            surfaceColorAtElevation(color = color, elevation = absoluteElevation),
+                        backgroundColor = color,
                         border = border,
-                        shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() }
+                        shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() },
                     )
                     .semantics(mergeDescendants = false) {
-                        @Suppress("DEPRECATION")
-                        isContainer = true
-                    }
-                    .pointerInput(Unit) {},
-            propagateMinConstraints = true
-        ) {
-            content()
-        }
+                        isTraversalGroup = true
+                    },
+            propagateMinConstraints = false,
+            contentAlignment = contentAlignment,
+            content = content,
+        )
     }
 }
 
@@ -87,38 +88,35 @@ fun MonoSurface(
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(color),
-    tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable () -> Unit
+    indication: Indication? = ripple(),
+    contentAlignment: Alignment = Alignment.Center,
+    content: @Composable BoxScope.() -> Unit
 ) {
-    val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         Box(
             modifier =
                 modifier
-//                    .minimumInteractiveComponentSize()
                     .surface(
                         shape = shape,
-                        backgroundColor =
-                            surfaceColorAtElevation(color = color, elevation = absoluteElevation),
+                        backgroundColor = color,
                         border = border,
                         shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() }
                     )
                     .clickable(
                         interactionSource = interactionSource,
-                        indication = rippleOrFallbackImplementation(),
+                        indication = indication,
                         enabled = enabled,
                         onClick = onClick
                     ),
-            propagateMinConstraints = true
-        ) {
-            content()
-        }
+            propagateMinConstraints = false,
+            contentAlignment = contentAlignment,
+            content = content,
+        )
     }
 }
 
@@ -132,39 +130,35 @@ fun MonoSurface(
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(color),
-    tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable () -> Unit
+    contentAlignment: Alignment = Alignment.Center,
+    content: @Composable BoxScope.() -> Unit
 ) {
-    val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         Box(
             modifier =
                 modifier
-                    .minimumInteractiveComponentSize()
                     .surface(
                         shape = shape,
-                        backgroundColor =
-                            surfaceColorAtElevation(color = color, elevation = absoluteElevation),
+                        backgroundColor = color,
                         border = border,
                         shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() }
                     )
                     .selectable(
                         selected = selected,
                         interactionSource = interactionSource,
-                        indication = rippleOrFallbackImplementation(),
+                        indication = ripple(),
                         enabled = enabled,
                         onClick = onClick
                     ),
-            propagateMinConstraints = true
-        ) {
-            content()
-        }
+            propagateMinConstraints = false,
+            contentAlignment = contentAlignment,
+            content = content,
+        )
     }
 }
 
@@ -178,39 +172,35 @@ fun MonoSurface(
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(color),
-    tonalElevation: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable () -> Unit
+    contentAlignment: Alignment = Alignment.Center,
+    content: @Composable BoxScope.() -> Unit
 ) {
-    val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteTonalElevation provides absoluteElevation
     ) {
         Box(
             modifier =
                 modifier
-                    .minimumInteractiveComponentSize()
                     .surface(
                         shape = shape,
-                        backgroundColor =
-                            surfaceColorAtElevation(color = color, elevation = absoluteElevation),
+                        backgroundColor = color,
                         border = border,
                         shadowElevation = with(LocalDensity.current) { shadowElevation.toPx() }
                     )
                     .toggleable(
                         value = checked,
                         interactionSource = interactionSource,
-                        indication = rippleOrFallbackImplementation(),
+                        indication = ripple(),
                         enabled = enabled,
                         onValueChange = onCheckedChange
                     ),
-            propagateMinConstraints = true
-        ) {
-            content()
-        }
+            propagateMinConstraints = false,
+            contentAlignment = contentAlignment,
+            content = content,
+        )
     }
 }
 
@@ -220,58 +210,18 @@ private fun Modifier.surface(
     backgroundColor: Color,
     border: BorderStroke?,
     shadowElevation: Float,
-) =
-    this.then(
+) = this
+    .then(
         if (shadowElevation > 0f) {
             Modifier.graphicsLayer(
                 shadowElevation = shadowElevation,
                 shape = shape,
-                clip = false
+                clip = false,
             )
         } else {
             Modifier
         }
     )
-        .then(if (border != null) Modifier.border(border, shape) else Modifier)
-        .background(color = backgroundColor, shape = shape)
-        .clip(shape)
-
-@Composable
-private fun surfaceColorAtElevation(color: Color, elevation: Dp): Color =
-    MaterialTheme.colorScheme.applyTonalElevation(color, elevation)
-
-
-@Composable
-@ReadOnlyComposable
-internal fun ColorScheme.applyTonalElevation(backgroundColor: Color, elevation: Dp): Color {
-    val tonalElevationEnabled = LocalTonalElevationEnabled.current
-    return if (backgroundColor == surface && tonalElevationEnabled) {
-        surfaceColorAtElevation(elevation)
-    } else {
-        backgroundColor
-    }
-}
-
-// TODO: b/304985887 - remove after one stable release
-@Suppress("DEPRECATION_ERROR")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun rippleOrFallbackImplementation(
-    bounded: Boolean = true,
-    radius: Dp = Dp.Unspecified,
-    color: Color = Color.Unspecified
-): Indication {
-    return if (LocalUseFallbackRippleImplementation.current) {
-        androidx.compose.material.ripple.rememberRipple(bounded, radius, color)
-    } else {
-        ripple(bounded, radius, color)
-    }
-}
-
-/**
- * CompositionLocal containing the current absolute elevation provided by [MonoSurface] components. This
- * absolute elevation is a sum of all the previous elevations. Absolute elevation is only used for
- * calculating surface tonal colors, and is *not* used for drawing the shadow in a [MonoSurface].
- */
-// TODO(b/179787782): Add sample after catalog app lands in aosp.
-val LocalAbsoluteTonalElevation = compositionLocalOf { 0.dp }
+    .then(if (border != null) Modifier.border(border, shape) else Modifier)
+    .background(color = backgroundColor, shape = shape)
+    .clip(shape)
