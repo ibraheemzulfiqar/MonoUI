@@ -1,6 +1,7 @@
 package com.mono.ui
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun MonoIcon(
@@ -41,11 +43,33 @@ fun rememberMonoIcon(
 @Composable
 fun rememberMonoIcon(
     imageVector: ImageVector,
+    @StringRes contentDescription: Int? = null,
+): MonoIcon {
+    return rememberMonoIcon(
+        imageVector = imageVector,
+        contentDescription = contentDescription?.let { stringResource(it) },
+    )
+}
+
+@Composable
+fun rememberMonoIcon(
+    imageVector: ImageVector,
     contentDescription: String? = null,
 ): MonoIcon {
     return rememberMonoIcon(
         painter = rememberVectorPainter(imageVector),
         contentDescription = contentDescription,
+    )
+}
+
+@Composable
+fun rememberMonoIcon(
+    @DrawableRes id: Int,
+    @StringRes contentDescription: Int? = null,
+): MonoIcon {
+    return rememberMonoIcon(
+        id = id,
+        contentDescription = contentDescription?.let { stringResource(it) },
     )
 }
 
