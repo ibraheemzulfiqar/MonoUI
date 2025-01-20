@@ -1,4 +1,4 @@
-package com.mono.ui.ui.theme
+package com.mono.ui.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
