@@ -357,7 +357,9 @@ fun MonoButton(
 object MonoButtonDefaults {
 
     val FloatingActionButtonElevation = 6.dp
-    private const val DisabledOutlineOpacity = 0.12f
+
+    internal const val DisabledOutlineOpacity = 0.12f
+    internal val ListButtonDisabledOpacity = 0.38f
 
     val textStyle = TextStyle.Default.copy(
         fontWeight = FontWeight.Medium,
@@ -376,7 +378,7 @@ object MonoButtonDefaults {
         minWidth: Dp = 58.dp,
         minHeight: Dp = 40.dp,
         iconSize: Dp = 24.dp,
-        padding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+        padding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
     ) = ButtonConstraints(
         minWidth = minWidth,
         minHeight = minHeight,
@@ -384,11 +386,16 @@ object MonoButtonDefaults {
         padding = padding,
     )
 
-    fun constraintUnspecified() = constraints(
-        minWidth = Dp.Unspecified,
-        minHeight = Dp.Unspecified,
-        iconSize = Dp.Unspecified,
-        padding = PaddingValues(),
+    fun noConstraints(
+        minWidth: Dp = Dp.Unspecified,
+        minHeight: Dp = Dp.Unspecified,
+        iconSize: Dp = Dp.Unspecified,
+        padding: PaddingValues = PaddingValues(),
+    ) = ButtonConstraints(
+        minWidth = minWidth,
+        minHeight = minHeight,
+        iconSize = iconSize,
+        padding = padding,
     )
 
     fun iconButtonConstraints() = constraints(

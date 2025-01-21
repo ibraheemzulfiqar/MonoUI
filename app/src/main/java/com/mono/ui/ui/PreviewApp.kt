@@ -1,8 +1,6 @@
 package com.mono.ui.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -10,7 +8,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -28,9 +25,8 @@ import com.mono.ui.LocalButtonShape
 import com.mono.ui.MonoButton
 import com.mono.ui.MonoButtonDefaults
 import com.mono.ui.MonoFloatingActionButton
-import com.mono.ui.MonoOutlinedButton
 import com.mono.ui.designsystem.components.PreviewContainerRow
-import com.mono.ui.designsystem.icons.MonoIcons
+import com.mono.ui.designsystem.icons.PreviewIcons
 import com.mono.ui.designsystem.theme.MonoUITheme
 
 @Composable
@@ -54,7 +50,7 @@ fun PreviewApp() {
             Scaffold(
                 floatingActionButton = {
                     MonoFloatingActionButton(
-                        icon = MonoIcons.Customize,
+                        icon = PreviewIcons.Customize,
                         constraints = MonoButtonDefaults.largeFabConstraints(),
                         onClick = { customizationDialogVisible = true },
                     )
@@ -66,6 +62,7 @@ fun PreviewApp() {
                 ) {
                     homeScreenRoute(navController)
                     buttonPreviewScreenRoute(navController)
+                    dialogPreviewScreenRoute(navController)
                 }
             }
         }

@@ -2,38 +2,22 @@
 
 package com.mono.ui.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.mono.ui.LocalButtonConstraints
 import com.mono.ui.LocalButtonShape
 import com.mono.ui.MonoButton
-import com.mono.ui.MonoButtonDefaults
 import com.mono.ui.MonoElevatedButton
 import com.mono.ui.MonoIcon
 import com.mono.ui.MonoIconButton
@@ -42,24 +26,30 @@ import com.mono.ui.MonoOutlinedIconButton
 import com.mono.ui.MonoToolbarButton
 import com.mono.ui.designsystem.components.PreviewContainerRow
 import com.mono.ui.designsystem.components.PreviewScaffold
-import com.mono.ui.designsystem.icons.MonoIcons
+import com.mono.ui.designsystem.icons.PreviewIcons
 import kotlinx.serialization.Serializable
 
 @Serializable
 object ButtonPreviewScreen
 
 fun NavGraphBuilder.buttonPreviewScreenRoute(
-    navHostController: NavHostController
+    navController: NavHostController
 ) {
     composable<ButtonPreviewScreen> {
-        ButtonPreviewScreen()
+        ButtonPreviewScreen(
+            onNavigate = { navController.navigateUp() }
+        )
     }
 }
 
 @Preview
 @Composable
-fun ButtonPreviewScreen() {
-    PreviewScaffold {
+fun ButtonPreviewScreen(
+    onNavigate: () -> Unit = {},
+) {
+    PreviewScaffold(
+        onNavigate = onNavigate,
+    ) {
         PreviewContainerRow(
             title = "Mono Buttons"
         ) {
@@ -95,23 +85,23 @@ fun ButtonPreviewScreen() {
             title = "Mono Icon Buttons"
         ) {
             MonoIconButton(
-                icon = MonoIcons.Call,
+                icon = PreviewIcons.Call,
                 onClick = {}
             )
 
             MonoOutlinedIconButton(
-                icon = MonoIcons.Call,
+                icon = PreviewIcons.Call,
                 onClick = {},
             )
 
             MonoIconButton(
-                icon = MonoIcons.Call,
+                icon = PreviewIcons.Call,
                 onClick = {},
                 colors = IconButtonDefaults.filledIconButtonColors(),
             )
 
             MonoIconButton(
-                icon = MonoIcons.Call,
+                icon = PreviewIcons.Call,
                 onClick = {},
                 colors = IconButtonDefaults.filledTonalIconButtonColors(),
             )
@@ -125,13 +115,13 @@ fun ButtonPreviewScreen() {
                 modifier = Modifier.clip(LocalButtonShape.current)
             ) {
                 MonoIconButton(
-                    icon = MonoIcons.Copy,
+                    icon = PreviewIcons.Copy,
                     onClick = {},
                     shape = RectangleShape,
                     colors = IconButtonDefaults.filledIconButtonColors(),
                 )
                 MonoIconButton(
-                    icon = MonoIcons.Share,
+                    icon = PreviewIcons.Share,
                     onClick = {},
                     shape = RectangleShape,
                     colors = IconButtonDefaults.filledIconButtonColors(),
@@ -141,19 +131,19 @@ fun ButtonPreviewScreen() {
             Row {
                 MonoToolbarButton(
                     modifier = Modifier.weight(1f),
-                    icon = MonoIcons.Share,
+                    icon = PreviewIcons.Share,
                     text = "Share",
                     onClick = {}
                 )
                 MonoToolbarButton(
                     modifier = Modifier.weight(1f),
-                    icon = MonoIcons.Copy,
+                    icon = PreviewIcons.Copy,
                     text = "Copy",
                     onClick = {}
                 )
                 MonoToolbarButton(
                     modifier = Modifier.weight(1f),
-                    icon = MonoIcons.Delete,
+                    icon = PreviewIcons.Delete,
                     text = "Delete",
                     onClick = {}
                 )
@@ -163,7 +153,7 @@ fun ButtonPreviewScreen() {
                 onClick = {},
                 horizontalSpace = 8.dp,
             ) {
-                MonoIcon(MonoIcons.Share)
+                MonoIcon(PreviewIcons.Share)
                 Text(text = "Share")
             }
         }
