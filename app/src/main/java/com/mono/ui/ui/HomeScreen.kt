@@ -29,6 +29,9 @@ fun NavGraphBuilder.homeScreenRoute(
             },
             onNavigateToDialogPreview = {
                 navController.navigate(DialogPreviewScreen)
+            },
+            onNavigateToTextFieldPreview = {
+                navController.navigate(TextFieldPreviewScreen)
             }
         )
     }
@@ -38,6 +41,7 @@ fun NavGraphBuilder.homeScreenRoute(
 fun HomeScreen(
     onNavigateToButtonPreview: () -> Unit,
     onNavigateToDialogPreview: () -> Unit,
+    onNavigateToTextFieldPreview: () -> Unit,
 ) {
     PreviewScaffold(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -55,6 +59,12 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             text = "Dialogs",
             onClick = onNavigateToDialogPreview,
+        )
+
+        MonoButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = "TextFields",
+            onClick = onNavigateToTextFieldPreview,
         )
     }
 }

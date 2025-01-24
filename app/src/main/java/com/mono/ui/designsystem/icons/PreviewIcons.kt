@@ -5,10 +5,14 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.DashboardCustomize
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
@@ -38,6 +42,18 @@ object PreviewIcons {
 
     @get:Composable
     val Feedback by Icons.Outlined.Feedback
+
+    @get:Composable
+    val Search by Icons.Outlined.Search
+
+    @get:Composable
+    val Close by Icons.Outlined.Close
+
+    @get:Composable
+    val Email by Icons.Outlined.Email
+
+    @get:Composable
+    val Notifications by Icons.Outlined.Notifications
 
     val Copy: MonoIcon
         @Composable

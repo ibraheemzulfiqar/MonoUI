@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package com.mono.ui.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement

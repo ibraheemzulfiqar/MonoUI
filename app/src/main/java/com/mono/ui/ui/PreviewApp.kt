@@ -1,58 +1,63 @@
 package com.mono.ui.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.mono.ui.LocalButtonShape
+import com.mono.ui.BottomSheetDismissibleState
+import com.mono.ui.ButtonConstraints
+import com.mono.ui.MobileUiProfile
+import com.mono.ui.MonoBottomSheetDialog
 import com.mono.ui.MonoButton
 import com.mono.ui.MonoButtonDefaults
 import com.mono.ui.MonoFloatingActionButton
-import com.mono.ui.designsystem.components.PreviewContainerRow
+import com.mono.ui.ProvideUiProfile
+import com.mono.ui.UiProfile
 import com.mono.ui.designsystem.icons.PreviewIcons
 import com.mono.ui.designsystem.theme.MonoUITheme
+import com.mono.ui.rememberBottomSheetDismissibleState
 
 @Composable
 fun PreviewApp() {
     val navController = rememberNavController()
-    var buttonShape: Shape by remember { mutableStateOf(MonoButtonDefaults.shape) }
-    var customizationDialogVisible by remember { mutableStateOf(false) }
+    val customizationDialog = rememberBottomSheetDismissibleState()
+
+    var uiProfile: UiProfile by remember { mutableStateOf(MobileUiProfile()) }
 
     MonoUITheme {
-
-        CompositionLocalProvider(
-            LocalButtonShape provides buttonShape,
-        ) {
-            if (customizationDialogVisible) {
-                CustomizationBottomSheet(
-                    onDismissRequest = { customizationDialogVisible = false },
-                    onUpdateShape = { buttonShape = it }
-                )
-            }
+        ProvideUiProfile(uiProfile) {
+            CustomizationBottomSheet(
+                state = customizationDialog,
+                currentProfile = uiProfile,
+                onUpdateProfile = { uiProfile = it }
+            )
 
             Scaffold(
                 floatingActionButton = {
                     MonoFloatingActionButton(
                         icon = PreviewIcons.Customize,
                         constraints = MonoButtonDefaults.largeFabConstraints(),
-                        onClick = { customizationDialogVisible = true },
+                        onClick = { customizationDialog.show() },
                     )
                 }
             ) { padding ->
@@ -63,25 +68,27 @@ fun PreviewApp() {
                     homeScreenRoute(navController)
                     buttonPreviewScreenRoute(navController)
                     dialogPreviewScreenRoute(navController)
+                    textFieldPreviewScreenRoute(navController)
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CustomizationBottomSheet(
-    onUpdateShape: (Shape) -> Unit,
-    onDismissRequest: () -> Unit,
+    state: BottomSheetDismissibleState,
+    currentProfile: UiProfile,
+    onUpdateProfile: (UiProfile) -> Unit,
 ) {
     @Composable
     fun SelectableButton(
-        text:String,
-        isSelected:Boolean,
+        text: String,
+        isSelected: Boolean,
         onClick: () -> Unit,
     ) {
         MonoButton(
+            modifier = Modifier.fillMaxWidth(),
             text = text,
             colors = if (isSelected) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
             border = if (isSelected) null else MonoButtonDefaults.outlinedBorder(),
@@ -89,46 +96,63 @@ fun CustomizationBottomSheet(
         )
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest
+    MonoBottomSheetDialog(
+        state = state,
     ) {
-        Text(
-            text = "Customize UI",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        PreviewContainerRow(
-            title = "Corner radius"
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val fullShape = RoundedCornerShape(100)
-            val smallShape = RoundedCornerShape(4.dp)
-            val rectShape = RectangleShape
-            val currentShape = LocalButtonShape.current
+            Text(
+                text = "Select App Profile",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
             SelectableButton(
-                text = "Full",
-                isSelected = currentShape == fullShape,
+                text = "Mobile Profile",
+                isSelected = currentProfile::class == MobileUiProfile::class,
                 onClick = {
-                    onUpdateShape(fullShape)
+                    onUpdateProfile(MobileUiProfile())
                 }
             )
 
             SelectableButton(
-                text = "Small",
-                isSelected = currentShape == smallShape,
+                text = "Mobile Small Corner Profile",
+                isSelected = currentProfile is MobileSmallCornerProfile,
                 onClick = {
-                    onUpdateShape(smallShape)
+                    onUpdateProfile(MobileSmallCornerProfile)
                 }
             )
 
             SelectableButton(
-                text = "None",
-                isSelected = currentShape == rectShape,
+                text = "Tablet Profile",
+                isSelected = currentProfile is TabletProfile,
                 onClick = {
-                    onUpdateShape(rectShape)
+                    onUpdateProfile(TabletProfile)
                 }
             )
         }
     }
 }
+
+
+object MobileSmallCornerProfile : MobileUiProfile() {
+    override val buttonShape: Shape = RoundedCornerShape(4.dp)
+}
+
+object TabletProfile : MobileUiProfile() {
+    override val buttonConstraints: ButtonConstraints = MonoButtonDefaults.constraints(
+        minHeight = 54.dp,
+        minWidth = 74.dp,
+        iconSize = 24.dp
+    )
+    override val buttonTextStyle: TextStyle = MonoButtonDefaults.textStyle.copy(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        lineHeight = 24.sp,
+    )
+}
+

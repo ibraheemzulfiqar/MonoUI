@@ -42,9 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-
-// #121212
-
 @Composable
 @NonRestartableComposable
 fun MonoSurface(

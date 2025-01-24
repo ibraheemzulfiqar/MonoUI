@@ -1,12 +1,14 @@
 package com.mono.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -17,10 +19,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -30,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -39,6 +45,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mono.ui.internal.ProvideContentColorTextStyle
 
 @Composable
 fun MonoSmallFloatingActionButton(
@@ -162,7 +169,10 @@ fun MonoToolbarButton(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(verticalSpace, Alignment.CenterVertically)
+                verticalArrangement = Arrangement.spacedBy(
+                    verticalSpace,
+                    Alignment.CenterVertically
+                )
             ) {
                 MonoIcon(icon, Modifier.size(LocalButtonConstraints.current.iconSize))
                 Text(text)
@@ -227,6 +237,7 @@ fun MonoButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     border: BorderStroke? = null,
     shadowElevation: Dp = 0.dp,
+    indication: Indication? = ripple(),
 ) {
     val color = if (enabled) colors.containerColor else colors.disabledContainerColor
     val contentColor = if (enabled) colors.contentColor else colors.disabledContentColor
@@ -237,11 +248,12 @@ fun MonoButton(
         enabled = enabled,
         shape = shape,
         color = color,
-        border = border,
         contentColor = contentColor,
+        border = border,
         shadowElevation = shadowElevation,
+        indication = indication,
     ) {
-        Text(text = text)
+        Text(text = text, color = contentColor)
     }
 }
 
@@ -304,6 +316,41 @@ fun MonoIconButton(
 }
 
 @Composable
+fun MonoBasicButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = RectangleShape,
+    color: Color = Color.Transparent,
+    contentColor: Color = LocalContentColor.current,
+    horizontalSpace: Dp = 0.dp,
+    shadowElevation: Dp = 0.dp,
+    border: BorderStroke? = null,
+    contentPadding: PaddingValues? = null,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = ripple(),
+    content: @Composable RowScope.() -> Unit,
+) {
+    ProvideButtonConstraints {
+        MonoButton(
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
+            horizontalSpace = horizontalSpace,
+            shadowElevation = shadowElevation,
+            border = border,
+            contentPadding = contentPadding,
+            interactionSource = interactionSource,
+            indication = indication,
+            content = content,
+        )
+    }
+}
+
+@Composable
 fun MonoButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -314,7 +361,9 @@ fun MonoButton(
     horizontalSpace: Dp = 0.dp,
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
+    contentPadding: PaddingValues? = null,
     interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = ripple(),
     content: @Composable RowScope.() -> Unit
 ) {
     MonoSurface(
@@ -327,21 +376,27 @@ fun MonoButton(
         shadowElevation = shadowElevation,
         border = border,
         interactionSource = interactionSource,
+        indication = indication,
     ) {
-        val mergedStyle = LocalTextStyle.current.merge(LocalButtonTextStyle.current)
+        val mergedStyle = if (contentColor.isSpecified) {
+            LocalButtonTextStyle.current.copy(color = contentColor)
+        } else {
+            LocalButtonTextStyle.current
+        }
 
         CompositionLocalProvider(
+            LocalContentColor provides contentColor,
             LocalTextStyle provides mergedStyle,
         ) {
             val constraints = LocalButtonConstraints.current
 
             Row(
                 Modifier
-                    .sizeIn(
+                    .defaultMinSize(
                         minWidth = constraints.minWidth,
                         minHeight = constraints.minHeight,
                     )
-                    .padding(constraints.padding),
+                    .padding(contentPadding ?: constraints.padding),
                 horizontalArrangement = Arrangement.spacedBy(
                     horizontalSpace,
                     Alignment.CenterHorizontally
@@ -373,6 +428,15 @@ object MonoButtonDefaults {
     )
 
     val shape = RoundedCornerShape(100)
+
+    fun fixedConstraints(
+        all: Dp
+    ) = constraints(
+        minHeight = all,
+        minWidth = all,
+        iconSize = all,
+        padding = PaddingValues()
+    )
 
     fun constraints(
         minWidth: Dp = 58.dp,

@@ -9,31 +9,81 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
+import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.mono.ui.internal.ProvideContentColorTextStyle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-// TODO: Local Composition for dialogs including colors, radius, outline buttons primary & secondary, probably text style and spacing too
-// only if needed
+@Composable
+fun MonoBottomSheetDialog(
+    state: BottomSheetDismissibleState,
+    modifier: Modifier = Modifier,
+    sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
+    shape: Shape = BottomSheetDefaults.ExpandedShape,
+    containerColor: Color = BottomSheetDefaults.ContainerColor,
+    contentColor: Color = contentColorFor(containerColor),
+    tonalElevation: Dp = 0.dp,
+    scrimColor: Color = BottomSheetDefaults.ScrimColor,
+    dragHandle: @Composable (() -> Unit)? = null/*{ BottomSheetDefaults.DragHandle() }*/,
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
+    properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    if (state.dismissed) return
+
+    ModalBottomSheet(
+        modifier = modifier,
+        sheetState = state.sheetState,
+        sheetMaxWidth = sheetMaxWidth,
+        shape = shape,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        tonalElevation = tonalElevation,
+        scrimColor = scrimColor,
+        dragHandle = dragHandle,
+        contentWindowInsets = contentWindowInsets,
+        properties = properties,
+        onDismissRequest = { state.dismiss() }
+    ) {
+        content()
+    }
+}
 
 @Composable
 fun MonoAlertDialog(
@@ -64,7 +114,7 @@ fun MonoAlertDialog(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
             if (secondaryButton != null && onSecondaryButtonClick != null) {
-                MonoButton(
+                MonoOutlinedButton(
                     modifier = Modifier.weight(1f),
                     text = secondaryButton,
                     colors = colors.secondaryButton,
@@ -213,7 +263,7 @@ object MonoDialogDefaults {
         title: Color = colorScheme.onSurface,
         text: Color = colorScheme.onSurfaceVariant,
         primaryButton: ButtonColors = ButtonDefaults.buttonColors(),
-        secondaryButton: ButtonColors = ButtonDefaults.filledTonalButtonColors(),
+        secondaryButton: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     ) = DialogColors(
         container = container,
         icon = icon,

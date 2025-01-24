@@ -1,9 +1,7 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package com.mono.ui.ui
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,11 +9,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.mono.ui.MonoAlertDialog
+import com.mono.ui.MonoBottomSheetDialog
 import com.mono.ui.MonoButton
 import com.mono.ui.MonoIcon
 import com.mono.ui.designsystem.components.PreviewContainerRow
 import com.mono.ui.designsystem.components.PreviewScaffold
 import com.mono.ui.designsystem.icons.PreviewIcons
+import com.mono.ui.rememberBottomSheetDismissibleState
 import com.mono.ui.rememberDismissibleState
 import kotlinx.serialization.Serializable
 
@@ -42,6 +42,8 @@ fun DialogPreviewScreen(
     val textDialog = rememberDismissibleState()
     val noButtonDialog = rememberDismissibleState()
     val onlyTextDialog = rememberDismissibleState()
+
+    val simpleBottomSheet = rememberBottomSheetDismissibleState()
 
     MonoAlertDialog(
         state = basicDialog,
@@ -90,6 +92,17 @@ fun DialogPreviewScreen(
         text = "This is basic alert dialog with text only. This does not include an icon, title and buttons.",
     )
 
+    MonoBottomSheetDialog(
+        state = simpleBottomSheet,
+    ) {
+        Text("Simple Bottom Sheet")
+        Text("This is a simple bottom sheet dialog")
+        MonoButton(
+            text = "Hide",
+            onClick = { simpleBottomSheet.dismiss() }
+        )
+    }
+
     PreviewScaffold(
         onNavigate = onNavigate
     ) {
@@ -119,6 +132,15 @@ fun DialogPreviewScreen(
             MonoButton(
                 text = "Only text",
                 onClick = { onlyTextDialog.show() }
+            )
+        }
+
+        PreviewContainerRow(
+            title = "Mono BottomSheet Dialog"
+        ) {
+            MonoButton(
+                text = "Basic",
+                onClick = { simpleBottomSheet.show() }
             )
         }
     }
